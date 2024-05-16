@@ -1,0 +1,14 @@
+# Datsets
+datasets/
+face/imgs/
+
+# .DS_Store
+.DS_Store
+
+# github
+django-lms/
+
+# database
+uesrs.db
+
+# 
