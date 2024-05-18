@@ -56,10 +56,6 @@ class UserManager:
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         # print(f"Hashed password for '{username}': {hashed_password}")
         self.db.add_user(username, hashed_password)
-        # print("User registered successfully. Current users in database:")
-        # users = self.db.get_all_users()
-        # for user in users:
-        #     print(user)
         return "User registered successfully"
 
     def login_user(self, username, password):
