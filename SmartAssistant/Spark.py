@@ -1,3 +1,5 @@
+import sys
+sys.path.append('./SmartAssistant/')
 import SparkApi
 import time
 
@@ -46,6 +48,18 @@ def checklen(text):
     while (getlength(text) > 8000):
         del text[0]
     return text
+
+def main(user_input):
+    while True:
+        # user_input = input("\n我: ")
+        question = checklen(getText("user", user_input))
+        SparkApi.answer = ""
+        print("星火:", end="")
+        SparkApi.main(appid, api_key, api_secret, Spark_url, domain, question)
+        # 输出答案
+        # print(SparkApi.answer)
+        getText("assistant", SparkApi.answer)
+        return SparkApi.answer
 
 if __name__ == '__main__':
     while True:

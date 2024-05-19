@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify, session,render_template
 import bcrypt
 import sys
-# sys.path.append('../')
-# from face.database import Database
 from face.database import Database
 from face import anti_spoof, face_registration,face_usersearch
+from SmartAssistant.Spark import main
+# import SmartAssistant.SparkApi as SparkApi
 app = Flask(__name__)
 app.secret_key = "GBnfazrY8sWixwHg"
 
@@ -120,5 +120,17 @@ def logout():
     session.clear()
     return jsonify({"msg": "退出成功"}), 200
 
+@app.route("/spark_ai", methods=["POST"])
+def spark_ai():
+    try:
+        user_input = request.get_json().get("user_input")
+        if user_input is None:
+            return jsonify({"error_code":"10000","msg": "参数不完整"}), 400
+        ai_answer= main(user_input)
+        return jsonify({"error_code":0,"msg": "success","data":ai_answer}), 200
+    except Exception as e:
+        print(f"Error during login: {e}")
+        return jsonify({"msg": "error"}), 500
+    
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001)
