@@ -9,9 +9,8 @@ SECRET_KEY = "IeyysQiuL5zALqTjZxc6i9rILLP2S81c"
 def main(filepath):
         
     url = "https://aip.baidubce.com/rest/2.0/face/v3/search?access_token=" + get_access_token()
-    # print(get_file_content_as_base64(fr'{filepath}',False))
     payload = json.dumps({
-        "group_id_list": "Facerepo",
+        "group_id_list": "Facerepo",	
         "image": get_file_content_as_base64(fr'{filepath}',False),
         "image_type": "BASE64",
         "quality_control": "NORMAL",
@@ -30,8 +29,8 @@ def main(filepath):
         user_id=response_dict["result"]["user_list"][0]["user_id"]
         return True,user_id
     else:
-        # print(response_dict["error_msg"])
-        return False,response_dict["error_msg"]
+        print(response_dict["error_msg"])
+        return False
 
 def get_file_content_as_base64(path, urlencoded=False):
     """
@@ -56,5 +55,7 @@ def get_access_token():
     return str(requests.post(url, params=params).json().get("access_token"))
 
 if __name__ == '__main__':
-    img_path='face/imgs/4.jpg'
-    main(img_path)
+    # 请填写图片路径
+    main(
+        filepath='face/imgs/1.jpg'
+    )

@@ -18,6 +18,9 @@ import os
 import traceback
 import json
 import requests
+appid='764c37a5'
+apisecret='ZmY4MWI0NTJlNjE2ZjFhZmYzNDJjMGZm'
+apikey='76b4dede8794d3bb2ad38d63283b91e3'
 
 
 class AssembleHeaderException(Exception):
@@ -60,15 +63,17 @@ def assemble_ws_auth_url(requset_url, method="GET", api_key="", api_secret=""):
     path = u.path
     now = datetime.now()
     date = format_date_time(mktime(now.timetuple()))
+    print(date)
+    # date = "Thu, 12 Dec 2019 01:57:27 GMT"
     signature_origin = "host: {}\ndate: {}\n{} {} HTTP/1.1".format(host, date, method, path)
-    # print(signature_origin)
+    print(signature_origin)
     signature_sha = hmac.new(api_secret.encode('utf-8'), signature_origin.encode('utf-8'),
                              digestmod=hashlib.sha256).digest()
     signature_sha = base64.b64encode(signature_sha).decode(encoding='utf-8')
     authorization_origin = "api_key=\"%s\", algorithm=\"%s\", headers=\"%s\", signature=\"%s\"" % (
         api_key, "hmac-sha256", "host date request-line", signature_sha)
     authorization = base64.b64encode(authorization_origin.encode('utf-8')).decode(encoding='utf-8')
-    # print(authorization_origin)
+    print(authorization_origin)
     values = {
         "host": host,
         "date": date,
@@ -106,14 +111,18 @@ def gen_body(appid, img_path, server_id):
     return json.dumps(body)
 
 
-def run(appid, apikey, apisecret, img_path, server_id='s67c9c78c'):
+def run(img_path, server_id='s67c9c78c'):
     url = 'http://api.xf-yun.com/v1/private/{}'.format(server_id)
     request_url = assemble_ws_auth_url(url, "POST", apikey, apisecret)
     headers = {'content-type': "application/json", 'host': 'api.xf-yun.com', 'app_id': appid}
-
-    response = requests.post(request_url, data=gen_body(appid, img_path, server_id), headers=headers)
+    # print(request_url)
+    image_path = fr'{img_path}'
+    response = requests.post(request_url, data=gen_body(appid, image_path, server_id), headers=headers)
     resp_data = json.loads(response.content.decode('utf-8'))
-
+    
+    print(resp_data)
+    
+    # print(base64.b64decode(resp_data['payload']['anti_spoof_result']['text']).decode())
     text_decode=base64.b64decode(resp_data['payload']['anti_spoof_result']['text']).decode()
     result_json=json.loads(text_decode)
     if result_json['passed']:
@@ -124,12 +133,10 @@ def run(appid, apikey, apisecret, img_path, server_id='s67c9c78c'):
         print(result_json['score'])
         return False
 
+
 #请填写控制台获取的APPID、APISecret、APIKey以及要检测的图片路径
 if __name__ == '__main__':
     run(
-        appid='764c37a5',
-        apisecret='ZmY4MWI0NTJlNjE2ZjFhZmYzNDJjMGZm',
-        apikey='76b4dede8794d3bb2ad38d63283b91e3',
-        img_path=r'face/4.jpg',
+        img_path='face/imgs/1.jpg',
     )
- 
+

@@ -15,7 +15,7 @@ def main(user_id,filepath):
         "group_id": "Facerepo",
         "image": get_file_content_as_base64(rf'{filepath}',False),
         "image_type": "BASE64",
-        "user_id": f"{user_id}"
+        "user_id": user_id
     })
     headers = {
         'Content-Type': 'application/json'

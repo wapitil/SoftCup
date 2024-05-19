@@ -15,7 +15,7 @@ class Database:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
-            role TEXT DEFAULT '学生' NOT NULL,
+            role TEXT DEFAULT 'student' NOT NULL,
             face_login_enabled INTEGER NOT NULL  -- 添加人脸登录标志字段
         )
         ''')
@@ -26,8 +26,10 @@ class Database:
         self.conn.commit()
 
     def get_user(self, username):
-        self.cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
-        return self.cursor.fetchone()
+        with self.conn:
+            cursor = self.conn.cursor()
+            cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+            return cursor.fetchone()
 
     def get_all_users(self):
         self.cursor.execute('SELECT * FROM users')

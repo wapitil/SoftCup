@@ -1,94 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>注册和登录</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-
-        .container {
-            margin-top: 50px;
-        }
-
-        .video-container {
-            display: none;
-            text-align: center;
-        }
-
-        #video {
-            width: 100%;
-            max-width: 400px;
-        }
-
-        #canvas {
-            display: none;
-        }
-    </style>
+    <title>注册和登录界面</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
 </head>
-
 <body>
     <div class="container">
-        <h2 class="text-center">注册和登录</h2>
-        <div class="row">
-            <div class="col-md-6">
-                <h3>注册</h3>
-                <form id="register-form">
-                    <div class="form-group">
-                        <label for="register-username">用户名</label>
-                        <input type="text" class="form-control" id="register-username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="register-password">密码</label>
-                        <input type="password" class="form-control" id="register-password" required>
-                    </div>
-                    <div class="form-group">
-                        <label>身份</label><br>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="role" id="student" value="student"
-                                checked>
-                            <label class="form-check-label" for="student">学生</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="role" id="teacher" value="teacher">
-                            <label class="form-check-label" for="teacher">老师</label>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-secondary" id="startCamera">打开摄像头</button>
-                    <div class="video-container">
-                        <video id="video" autoplay></video>
-                        <canvas id="canvas"></canvas>
-                        <button type="button" class="btn btn-primary" id="snap">拍照</button>
-                        <button type="button" class="btn btn-warning" id="retake">重拍</button>
-                        <button type="button" class="btn btn-success" id="confirm">确认</button>
-                        <button type="button" class="btn btn-danger" id="stopCamera">关闭摄像头</button>
-                    </div>
-                    <button type="submit" class="btn btn-success">注册</button>
+        <div class="form-container">
+            <div id="register-form" class="form active">
+                <h2>注册</h2>
+                <form id="registerForm" action="#" method="post">
+                    <input type="text" id="name" placeholder="用户名" required>
+                    <input type="password" id="password" placeholder="密码" required>
+                    <input type="password" id="check-password" placeholder="确认密码" required>
+                    <select required>
+                        <option value="" disabled selected>选择身份</option>
+                        <option value="teacher">老师</option>
+                        <option value="student">学生</option>
+                        <option value="parent">家长</option>
+                    </select>
+                    <label>
+                        <input type="checkbox" id="face_image_enabled"> 启用人脸识别
+                    </label>
+                    <button type="submit">注册</button>
                 </form>
+                <!-- <button class="face-recognition-button" onclick="startFaceRecognitionRegister()">人脸识别注册</button> -->
+                <p>已有账号？<a href="#" onclick="toggleForms()">点击登录</a></p>
             </div>
-            <div class="col-md-6">
-                <h3>登录</h3>
-                <form id="login-form">
-                    <div class="form-group">
-                        <label for="login-username">用户名</label>
-                        <input type="text" class="form-control" id="login-username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="login-password">密码</label>
-                        <input type="password" class="form-control" id="login-password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">登录</button>
+            <div id="login-form" class="form">
+                <h2>登录</h2>
+                <form id="loginForm" action="#" method="post">
+                    <input type="text" placeholder="用户名" required>
+                    <input type="password" placeholder="密码" required>
+                    <button type="submit">登录</button>
                 </form>
+                <button class="face-recognition-button" onclick="startFaceRecognitionLogin()">人脸识别登录</button>
+                <p>没有账号？<a href="#" onclick="toggleForms()">点击注册</a></p>
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-</body>
+    <div id="face-recognition-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2>人脸识别注册</h2>
+            <video id="video" width="320" height="240" autoplay></video>
+            <button onclick="captureFace()">拍摄</button>
+            <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
+            <button onclick="submitFaceData()" style="display: none;" id="submitFaceButton">提交</button>
+        </div>
+    </div>
 
+    <div id="face-recognition-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2>人脸识别登录</h2></h2>
+            <video id="video" width="320" height="240" autoplay></video>
+            <button onclick="captureFace()">拍摄</button>
+            <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
+            <button onclick="submitFaceData()" style="display: none;" id="submitFaceButton">提交</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
+</body>
 </html>
