@@ -11,4 +11,5 @@ django-lms/
 # database
 uesrs.db
 
-# 
+# config
+config/

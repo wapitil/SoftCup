@@ -18,10 +18,17 @@ import os
 import traceback
 import json
 import requests
-appid='764c37a5'
-apisecret='ZmY4MWI0NTJlNjE2ZjFhZmYzNDJjMGZm'
-apikey='76b4dede8794d3bb2ad38d63283b91e3'
+import configparser
 
+# 获取当前脚本所在的绝对路径
+current_path = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(current_path, 'config', 'config.ini')
+config = configparser.ConfigParser()
+config.read(config_path)
+# print("Sections found in config:", config.sections())  # 打印所有找到的部分名称
+appid = config['ANTI_SPOOF']['appid']
+apisecret = config['ANTI_SPOOF']['apisecret']
+apikey = config['ANTI_SPOOF']['apikey']
 
 class AssembleHeaderException(Exception):
     def __init__(self, msg):

@@ -6,6 +6,7 @@ from face import anti_spoof, face_registration,face_usersearch
 from SmartAssistant.Spark import main
 # import SmartAssistant.SparkApi as SparkApi
 app = Flask(__name__)
+
 app.secret_key = "GBnfazrY8sWixwHg"
 
 # 使用持久化的数据库文件
