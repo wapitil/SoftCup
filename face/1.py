@@ -1,5 +1,4 @@
 import psycopg2
-from psycopg2 import sql
 import bcrypt
 import configparser
 import os
@@ -7,13 +6,31 @@ import os
 # 获取当前脚本所在的绝对路径
 current_path = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(current_path, 'config', 'config.ini')
+
+# Debugging statement to check the config path
+print(f"Config path: {config_path}")
+
 config = configparser.ConfigParser()
 config.read(config_path)
+
+# Debugging statement to check if config file is read
+if config.sections():
+    print("Config file read successfully.")
+else:
+    print("Failed to read config file.")
+
 db_name = config['DATABASE']['db_name']
 user = config['DATABASE']['user']
 password = config['DATABASE']['password']
 host = config['DATABASE']['host']
 port = config['DATABASE']['port']
+
+# Debugging statements to check the values read from the config file
+print(f"Database Name: {db_name}")
+print(f"User: {user}")
+print(f"Password: {password}")
+print(f"Host: {host}")
+print(f"Port: {port}")
 
 class Database:
     def __init__(self):
@@ -53,7 +70,6 @@ class Database:
             print(f"User found: {user}")
         else:
             print(f"No user found with username '{username}'")
-            return None
         return user
 
     def get_all_users(self):
@@ -84,12 +100,12 @@ class Database:
 
 def menu():
     print("Select an option:")
-    print("1. 添加用户")
-    print("2. 查询用户")
-    print("3. 查询全部用户")
-    print("4. 更改密码")
-    print("5. 删除用户")
-    print("6. 退出")
+    print("1. Add User")
+    print("2. Get User")
+    print("3. Get All Users")
+    print("4. Update User Password")
+    print("5. Delete User")
+    print("6. Exit")
 
 if __name__ == "__main__":
     db = Database()
