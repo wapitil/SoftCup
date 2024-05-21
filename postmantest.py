@@ -4,10 +4,13 @@ import sys
 from face.database import Database
 from face import anti_spoof, face_registration,face_usersearch
 from SmartAssistant.Spark import main
-# import SmartAssistant.SparkApi as SparkApi
+# import SmartAssistant.SparkApi as SparkApi‘
+from student import student
+
 app = Flask(__name__)
 
 app.secret_key = "GBnfazrY8sWixwHg"
+app.register_blueprint(student, url_prefix='/student')
 
 # 使用持久化的数据库文件
 db = Database()
@@ -31,7 +34,7 @@ def register():
             return jsonify({"error_code": 10000, "msg": "参数不完整","data":{}}), 400
 
         if db.get_user(name):
-            return jsonify({"error_code": 10001,"msg": "用户已存在","data":{}}), 409
+            return jsonify({"error_code": 10001,"msg": "用户已存在","data":{}}), 403
         
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         
@@ -43,7 +46,7 @@ def register():
                 return jsonify({"error_code": 10003,"msg": "静默检测失败","data":{}}), 400
 
             if face_usersearch.main(face_image):  
-                return jsonify({"error_code": 10004,"msg": "人脸已注册","data":{}}), 409
+                return jsonify({"error_code": 10004,"msg": "人脸已注册","data":{}}), 403
             
             if not face_registration.main(name,face_image):
                 return jsonify({"error_code": 10005,"msg": "人脸注册失败","data":{}}), 500
@@ -106,16 +109,30 @@ def face_login():
     except Exception as e:
         print(f"Error during face login: {e}")
         return jsonify({"error_code": 10006,"msg": "error", "data":{"error_detail":str(e)}}), 500
-
-        
+    
 @app.route("/session", methods=["GET"])
 def check_session():
     name = session.get("name")
     # role = session.get("role")
     if name is None:
-        return jsonify({"error_code":10008,"msg": "未登录","data":{}}), 401
+        return jsonify({"error_code":10008,"msg": "未登录","data":{}})
     else:
         return jsonify({"error_code":0,"msg": "success","data":{"name":name}}), 200
+    
+@app.route("/update_password",methods=['POST'])
+def update_password():
+    user_info = request.get_json()
+    username=user_info.get('name')
+    new_password=user_info.get('new_password')
+    check_password=user_info.get('check_password')
+    if db.get_user(username) is None:
+        return jsonify({"error_code":10010,"msg": "用户不存在","data":{}})
+    if check_password !=new_password:
+        return jsonify({"error_code":10009,"msg": "两次输入的密码不匹配","data":{}}), 200
+    else:
+        db.update_user_password(username, new_password)
+        return jsonify({"error_code": 0,"msg": "success","data":{}}), 200
+
 
 @app.route("/logout", methods=["GET"])
 def logout():
@@ -135,4 +152,4 @@ def spark_ai():
         return jsonify({"msg": "error"}), 500
     
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001)
+    app.run(host="0.0.0.0", port=5001,debug=True)
