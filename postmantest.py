@@ -2,12 +2,15 @@ from flask import Flask, request, jsonify, session,render_template
 import bcrypt
 import sys
 from face.database import Database
-from face import anti_spoof, face_registration,face_usersearch
+from face import anti_spoof, face_registration,face_search
 from SmartAssistant.Spark import main
 # import SmartAssistant.SparkApi as SparkApi‘
 from student import student
+from flask_cors import CORS
 
-app = Flask(__name__)
+app = Flask(__name__,static_folder='face/static', template_folder='face/templates')
+
+CORS(app)
 
 app.secret_key = "GBnfazrY8sWixwHg"
 app.register_blueprint(student, url_prefix='/student')
@@ -15,12 +18,8 @@ app.register_blueprint(student, url_prefix='/student')
 # 使用持久化的数据库文件
 db = Database()
 
-@app.route('/')
-def index():
-    return render_template('test.html')
-
-@app.route('/register', methods=['POST'])
-def register():
+@app.route('/login', methods=['POST'])
+def login():
     try:
         user_info = request.get_json()
         name = user_info.get('name')
@@ -45,7 +44,7 @@ def register():
             if not anti_spoof.run(face_image):
                 return jsonify({"error_code": 10003,"msg": "静默检测失败","data":{}}), 400
 
-            if face_usersearch.main(face_image):  
+            if face_search.main(face_image):  
                 return jsonify({"error_code": 10004,"msg": "人脸已注册","data":{}}), 403
             
             if not face_registration.main(name,face_image):
@@ -67,8 +66,8 @@ def str_to_bool(value):
         return value
     return str(value).lower() in ('true', '1', 'yes', 'y', 't')
 
-@app.route('/login', methods=['POST'])
-def login():
+@app.route('/signin', methods=['POST'])
+def signin():
     try:
         user_info = request.get_json()
         name = user_info.get('name')
@@ -90,15 +89,14 @@ def login():
         print(f"Error during login: {e}")
         return jsonify({"error_code": 10006,"msg": "error", "data":{"error_detail":str(e)}}), 500
 
-@app.route('/face_login', methods=['POST'])
-def face_login():
+@app.route('/face_scan', methods=['POST'])
+def face_scan():
     try:
         user_info = request.get_json()
-        face_image = user_info.get('face_image')  
+        face_image = user_info.get('image')  
         if face_image is None:
             return jsonify({"error_code": 10002,"msg": "人脸图像缺失","data":{}}), 200
-        
-        is_success,user=face_usersearch.main(face_image)
+        is_success,user=face_search.main(face_image)
         if is_success:
             print(user)
             user = db.get_user(user)
@@ -106,6 +104,8 @@ def face_login():
             session["role"] = user[3]
             session["face_login_enabled"] = "True"
             return jsonify({"error_code":0,"msg": "success","data":{}}), 200
+        else:
+            return jsonify({"error_code": 10002,"msg": "人脸图像缺失","data":{}}), 200
     except Exception as e:
         print(f"Error during face login: {e}")
         return jsonify({"error_code": 10006,"msg": "error", "data":{"error_detail":str(e)}}), 500

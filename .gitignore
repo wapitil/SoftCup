@@ -10,8 +10,11 @@ uesrs.db
 
 # config
 config/
+
 # test
 test/
+functiontest/
+ref/
 
 # __pycache__
 __pycache__/

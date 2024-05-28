@@ -29,25 +29,68 @@ class Database:
 
     def create_table(self):
         self.cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            username TEXT PRIMARY KEY NOT NULL,
+        CREATE TABLE IF NOT EXISTS user_info (
+            user_id SERIAL PRIMARY KEY,
+            username TEXT NOT NULL,
             password TEXT NOT NULL,
             role TEXT DEFAULT 'student' NOT NULL,
             face_login_enabled BOOLEAN NOT NULL
         )
         ''')
+
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS exercise_center (
+            exercise_id SERIAL PRIMARY KEY,
+            type TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            exercise_point TEXT,
+            stem TEXT NOT NULL,
+            answer TEXT NOT NULL,
+            explain TEXT
+        )
+        ''')
+
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS error_exercise (
+            user_id INTEGER NOT NULL,
+            exercise_id INTEGER NOT NULL,
+            sum_error_times INTEGER DEFAULT 0,
+            error_times INTEGER DEFAULT 0,
+            FOREIGN KEY (user_id) REFERENCES user_info(user_id),
+            FOREIGN KEY (exercise_id) REFERENCES exercise_center(exercise_id)
+        )
+        ''')
+
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS video_center (
+            video_id SERIAL PRIMARY KEY,
+            video_name TEXT NOT NULL,
+            sum_click_times INTEGER DEFAULT 0
+        )
+        ''')
+
+        self.cursor.execute('''
+        CREATE TABLE IF NOT EXISTS video_history (
+            user_id INTEGER NOT NULL,
+            video_id INTEGER NOT NULL,
+            click_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES user_info(user_id),
+            FOREIGN KEY (video_id) REFERENCES video_center(video_id)
+        )
+        ''')
+
         self.conn.commit()
 
     def add_user(self, username, password, role, face_login_enabled):
         self.cursor.execute(
-            'INSERT INTO users (username, password, role, face_login_enabled) VALUES (%s, %s, %s, %s)', 
+            'INSERT INTO user_info (username, password, role, face_login_enabled) VALUES (%s, %s, %s, %s)', 
             (username, password, role, face_login_enabled)
         )
         self.conn.commit()
         print(f"User '{username}' added successfully.")
 
     def get_user(self, username):
-        self.cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
+        self.cursor.execute('SELECT * FROM user_info WHERE username = %s', (username,))
         user = self.cursor.fetchone()
         if user:
             print(f"User found: {user}")
@@ -57,7 +100,7 @@ class Database:
         return user
 
     def get_all_users(self):
-        self.cursor.execute('SELECT * FROM users')
+        self.cursor.execute('SELECT * FROM user_info')
         users = self.cursor.fetchall()
         if users:
             print("All users:")
@@ -68,13 +111,13 @@ class Database:
         return users
 
     def delete_user(self, username):
-        self.cursor.execute('DELETE FROM users WHERE username = %s', (username,))
+        self.cursor.execute('DELETE FROM user_info WHERE username = %s', (username,))
         self.conn.commit()
         print(f"User '{username}' deleted successfully.")
 
     def update_user_password(self, username, new_password):
         hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
-        self.cursor.execute('UPDATE users SET password = %s WHERE username = %s', (hashed_password, username))
+        self.cursor.execute('UPDATE user_info SET password = %s WHERE username = %s', (hashed_password, username))
         self.conn.commit()
         print(f"Password for user '{username}' updated successfully.")
 

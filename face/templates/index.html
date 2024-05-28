@@ -4,65 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>注册和登录界面</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
-<body>
+
+<body >
     <div class="container">
         <div class="form-container">
-            <div id="register-form" class="form active">
-                <h2>注册</h2>
-                <form id="registerForm" action="#" method="post">
-                    <input type="text" id="name" placeholder="用户名" required>
-                    <input type="password" id="password" placeholder="密码" required>
-                    <input type="password" id="check-password" placeholder="确认密码" required>
-                    <select required>
-                        <option value="" disabled selected>选择身份</option>
-                        <option value="teacher">老师</option>
-                        <option value="student">学生</option>
-                        <option value="parent">家长</option>
-                    </select>
-                    <label>
-                        <input type="checkbox" id="face_image_enabled"> 启用人脸识别
-                    </label>
-                    <button type="submit">注册</button>
-                </form>
-                <!-- <button class="face-recognition-button" onclick="startFaceRecognitionRegister()">人脸识别注册</button> -->
-                <p>已有账号？<a href="#" onclick="toggleForms()">点击登录</a></p>
-            </div>
-            <div id="login-form" class="form">
-                <h2>登录</h2>
+            <div id="login-form" class="form active">
+                <h2 style="text-align: center;">登录</h2>
                 <form id="loginForm" action="#" method="post">
-                    <input type="text" placeholder="用户名" required>
-                    <input type="password" placeholder="密码" required>
-                    <button type="submit">登录</button>
+                    <input type="text" id="username" placeholder="用户名" required>
+                    <div class="nameerror" id="loginnameerror"></div>
+                    <input type="password" id="password" placeholder="密码" required>
+                    <div class="passerror" id="loginpasserror"></div>
+                    <select id="role" required>
+                        <option value="" disabled selected>你是？</option>
+                        <option value="manager">管理员</option>
+                        <option value="student">学生</option>
+                    </select>
+                    <button type="submit" >登录</button>
                 </form>
-                <button class="face-recognition-button" onclick="startFaceRecognitionLogin()">人脸识别登录</button>
+                <button class="face-recognition-button" onclick="startFaceRecognition()">人脸识别登录</button>
                 <p>没有账号？<a href="#" onclick="toggleForms()">点击注册</a></p>
             </div>
+            <div id="register-form" class="form">
+                <h2 style="text-align: center;">注册</h2>
+                <form id="registerForm" action="#" method="post">
+                    <input type="text" id="username" placeholder="用户名" required>
+                    <div class="nameerror" id="registernameerror" style="display: none;"></div>
+                    <input type="password" id="password" placeholder="密码" required>
+                    <div class="passerror" id="registerpasserror" style="display: none;"></div>
+                    <input type="text" id="confirmpassword" placeholder="确认密码" required>
+                    <div class="confirmpasserror" id="confirmpasserror" style="display: none;"></div>
+                    <select id="role" required>
+                        <option value="" disabled selected>选择身份</option>
+                        <option value="manager">管理员</option>
+                        <option value="student">学生</option>
+                    </select>
+                    <button type="submit">注册</button>
+                </form>
+                <button class="face-recognition-button" onclick="startFaceRecognition()">人脸识别注册</button>
+                <p>已有账号？<a href="#" onclick="toggleForms()">点击登录</a></p>
+            </div>
         </div>
     </div>
-    <div id="face-recognition-modal" class="modal">
+    <div id="face-Recognition-modal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal()">&times;</span>
-            <h2>人脸识别注册</h2>
-            <video id="video" width="320" height="240" autoplay></video>
-            <button onclick="captureFace()">拍摄</button>
-            <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
-            <button onclick="submitFaceData()" style="display: none;" id="submitFaceButton">提交</button>
-        </div>
-    </div>
-
-    <div id="face-recognition-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal()">&times;</span>
-            <h2>人脸识别登录</h2></h2>
-            <video id="video" width="320" height="240" autoplay></video>
-            <button onclick="captureFace()">拍摄</button>
-            <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
-            <button onclick="submitFaceData()" style="display: none;" id="submitFaceButton">提交</button>
+            <h2>人脸识别</h2>
+            <video class="video" id="video" autoplay></video>
+            <canvas class="canvas" id="canvas"></canvas>
+            <div class="button-three" style=" position: absolute; left: 100px; top: 70%; width: 300px;  height: 70px;">
+                <button class="get-face" onclick="captureFace()" >拍摄</button>
+                <button class="reget-face" onclick="regetFace()">重新拍摄</button>
+                <button class="submitFaceButton" onclick="submitFaceData()" id="submitFaceButton">提交</button>
+            </div>
         </div>
     </div>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-
 </body>
+
 </html>

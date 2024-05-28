@@ -3,41 +3,27 @@ import urllib
 import requests
 import json
 
-import os
-import configparser
-# 获取当前脚本所在的绝对路径
-current_path = os.path.dirname(os.path.abspath(__file__))
-config_path = os.path.join(current_path, 'config', 'config.ini')
-config = configparser.ConfigParser()
-config.read(config_path)
-print("Sections found in config:", config.sections())  # 打印所有找到的部分名称
-API_KEY = config['FACE_SEARCH']['API_KEY']
-SECRET_KEY = config['FACE_SEARCH']['SECRET_KEY']
+API_KEY = "k4EdPM6UR6nQjN2EZ4nPPD7o"
+SECRET_KEY = "IeyysQiuL5zALqTjZxc6i9rILLP2S81c"
 
-def main(user_id,filepath):
+def main(user_id,image):
         
     url = "https://aip.baidubce.com/rest/2.0/face/v3/faceset/user/add?access_token=" + get_access_token()
     
-    # image 可以通过 get_file_content_as_base64("C:\fakepath\Ami.png",False) 方法获取
+    # image 可以通过 get_file_content_as_base64("C:\fakepath\1.jpg",False) 方法获取
     payload = json.dumps({
         "group_id": "Facerepo",
-        "image": get_file_content_as_base64(rf'{filepath}',False),
         "image_type": "BASE64",
-        "user_id": user_id
+        "user_id": user_id,
+        "image":image
     })
     headers = {
         'Content-Type': 'application/json'
     }
     
     response = requests.request("POST", url, headers=headers, data=payload)
-    response_dict = json.loads(response.text)
-    # print(response.text)
-    if response_dict["error_code"]==0:
-        # print('人脸注册成功')
-        return True
-    else:
-        print(response_dict["error_msg"])
-        return False
+    
+    print(response.text)
     
 
 def get_file_content_as_base64(path, urlencoded=False):
@@ -63,7 +49,6 @@ def get_access_token():
     return str(requests.post(url, params=params).json().get("access_token"))
 
 if __name__ == '__main__':
-
-    user_id="123123"
-    filepath="face/imgs/1.jpg"
-    main(user_id,filepath)
+    user_id="123"
+    base64=get_file_content_as_base64('./imgs/1.png') # 使用该命令时注意切换路径至./face
+    main(user_id,base64)
