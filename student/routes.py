@@ -1,3 +1,4 @@
+# /student/routes.py
 from . import student
 from flask import send_from_directory
 
