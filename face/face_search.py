@@ -7,7 +7,7 @@ import os
 import configparser
 # 获取当前脚本所在的绝对路径
 current_path = os.path.dirname(os.path.abspath(__file__))
-config_path = os.path.join(current_path, 'config', 'config.ini')
+config_path = os.path.join(current_path, '..','config', 'config.ini')
 print(config_path )
 config = configparser.ConfigParser()
 config.read(config_path)

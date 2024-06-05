@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, session,render_template
 import bcrypt
 import sys
-from database.database import Database
+from database.total_data import Mydata
 from face import anti_spoof, face_registration,face_search
 from SmartAssistant.Spark import main
 # import SmartAssistant.SparkApi as SparkApi‘
@@ -15,7 +15,7 @@ CORS(app)
 app.secret_key = "GBnfazrY8sWixwHg"
 app.register_blueprint(student, url_prefix='/student')
 
-
+db = Mydata()
 
 @app.route('/login', methods=['POST'])
 def login():

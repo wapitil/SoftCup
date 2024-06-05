@@ -2,9 +2,15 @@ import base64
 import urllib
 import requests
 import json
-
-API_KEY = "k4EdPM6UR6nQjN2EZ4nPPD7o"
-SECRET_KEY = "IeyysQiuL5zALqTjZxc6i9rILLP2S81c"
+import os
+import configparser
+# 获取当前脚本所在的绝对路径
+current_path = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(current_path, '..','config', 'config.ini')
+config = configparser.ConfigParser()
+config.read(config_path)
+API_KEY = config['FACE_SEARCH']['API_KEY']
+SECRET_KEY = config['FACE_SEARCH']['SECRET_KEY']
 
 def main(user_id,image):
         

@@ -5,21 +5,22 @@ import hashlib
 import base64
 import hmac
 from urllib.parse import urlencode
-import os
 import json
 import requests
-import configparser
 import urllib
+import os
+import configparser
+
 
 # 获取当前脚本所在的绝对路径
 current_path = os.path.dirname(os.path.abspath(__file__))
-config_path = os.path.join(current_path, 'config', 'config.ini')
+config_path = os.path.join(current_path, '..','config', 'config.ini')
 config = configparser.ConfigParser()
 config.read(config_path)
 
-appid = config['ANTI_SPOOF']['appid']
-apisecret = config['ANTI_SPOOF']['apisecret']
-apikey = config['ANTI_SPOOF']['apikey']
+appid = config['XUNFEI']['appid']
+apisecret = config['XUNFEI']['apisecret']
+apikey = config['XUNFEI']['apikey']
 
 class AssembleHeaderException(Exception):
     def __init__(self, msg):
@@ -75,8 +76,8 @@ def gen_body(appid, image, server_id):
         "header": {"app_id": appid, "status": 3},
         "parameter": {
             server_id: {
-                "service_kind": "anti_spoof",
-                "anti_spoof_result": {"encoding": "utf8", "compress": "raw", "format": "json"}
+                "service_kind": "XUNFEI",
+                "XUNFEI_result": {"encoding": "utf8", "compress": "raw", "format": "json"}
             }
         },
         "payload": {
@@ -100,7 +101,7 @@ def run(image, server_id='s67c9c78c'):
             return False
 
         resp_data = response.json()
-        text_decode = base64.b64decode(resp_data['payload']['anti_spoof_result']['text']).decode()
+        text_decode = base64.b64decode(resp_data['payload']['XUNFEI_result']['text']).decode()
         result_json = json.loads(text_decode)
 
         if result_json['passed']:
